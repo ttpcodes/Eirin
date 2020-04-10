@@ -1,10 +1,12 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_dance.contrib.discord import discord, make_discord_blueprint
 from requests import get, put
 
 from json import load
 from os import getenv, popen
 from shlex import quote
+
+BASE_TEMPLATE = 'base.html'
 
 app = Flask(__name__)
 
@@ -46,8 +48,10 @@ def index():
                 # Update the database so that in the bot table, the kerb has user id (stored in user['id']).
                 pass
             if user and user['id'] != user:
-                return ("Your current Discord account doesn't match what we have on record. Please log into the "
-                        'account you used previously. Please contact sipb-discord@mit.edu if this is an error.'), 403
+                return render_template(BASE_TEMPLATE, message=("Your current Discord account doesn't match what we "
+                                                               'have on record. Please log into the account you used '
+                                                               'previously. Please contact sipb-discord@mit.edu if '
+                                                               'this is an error.')), 403
             ldap = get_ldap(kerb)
             roles = [config['discord']['verified'], config['discord']['roles'][ldap['eduPersonAffiliation']]]
             if ldap['eduPersonAffiliation'] == 'student':
@@ -63,12 +67,21 @@ def index():
                         r = get('https://discordapp.com/api/guilds/{}/members/{}/roles/{}'
                                 .format(config['discord']['guild'], user['id'], i), headers=authorization)
                         if r.status_code != 204:
-                            return ('There was an error granting access to the Discord server. Please contact '
-                                    'sipb-discord@mit.edu for assistance.'), 500
-                    return ('You should now have access to the CPW 2020 Discord server! If you are having problems, please '
-                            'let us know.')
-            return ('There was an error granting access to the Discord server. Please contact '
-                    'sipb-discord@mit.edu for assistance.'), 500
-        return 'Please authorize with Discord to join the CPW 2020 Discord server.'
-    return ('You are not on the list of representatives for the CPW 2020 Discord server. If this is an error, '
-            'please contact the other representatives of your student organization.'), 401
+                            return render_template(BASE_TEMPLATE, message=('There was an error granting you access to '
+                                                                           'the Discord server. Please contact '
+                                                                           '<a href="mailto:sipb-discord@mit.edu">'
+                                                                           'sipb-discord@mit.edu</a> for assistance.')
+                                                   ),500
+                    return render_template(BASE_TEMPLATE, message=('You should now have access to the CPW 2020 Discord '
+                                                                   'server! If you are having problems, please let us '
+                                                                   'know.'))
+            return render_template(BASE_TEMPLATE, message=('There was an error granting you access to the Discord '
+                                                           'server. Please contact '
+                                                           '<a href="mailto:sipb-discord@mit.edu">sipb-discord@mit.edu'
+                                                           '</a> for assistance.')), 500
+        return render_template(BASE_TEMPLATE, message=('You\'re one step away from accessing the CPW 2020 Discord '
+                                                       'server! Please <a href="discord">click here</a> to '
+                                                       'authenticate with Discord and verify your Discord account.'))
+    return render_template(BASE_TEMPLATE, message=('You are not on the list of representatives for the CPW 2020 '
+                                                   'Discord server. If this is an error, please contact the other '
+                                                   'representatives of your student organization.')), 401
