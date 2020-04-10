@@ -4,4 +4,4 @@ ErrorDocument 401 /__scripts/needcerts
 
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ /afs/athena.mit.edu/org/c/cpw2020/web_scripts/discord/eirin/cgi.py/$1 [L]
+RewriteRule ^(.*)$ /afs/athena.mit.edu/org/c/cpw2020/web_scripts/discord/cgi.py/$1 [L]
