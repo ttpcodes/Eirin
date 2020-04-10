@@ -116,8 +116,9 @@ def index():
                                                                        'sipb-discord@mit.edu</a> for assistance.')
                                                ), 500
             return render_template(BASE_TEMPLATE, message=('You should now have access to the CPW 2020 Discord '
-                                                           'server! If you are having problems, please let us '
-                                                           'know.'))
+                                                           'server! If you are having problems, please contact us at '
+                                                           '<a href="mailto:sipb-discord@mit.edu">'
+                                                           'sipb-discord@mit.edu</a> for assistance.'))
         return render_template(BASE_TEMPLATE, message=('There was an error granting you access to the Discord '
                                                        'server. Please contact '
                                                        '<a href="mailto:sipb-discord@mit.edu">sipb-discord@mit.edu'
