@@ -91,9 +91,9 @@ def index():
         elif user['id'] != user_id:
             connection.close()
             return render_template(BASE_TEMPLATE, message=("Your current Discord account doesn't match what we "
-                                                        'have on record. Please log into the account you used '
-                                                        'previously. Please contact sipb-discord@mit.edu if '
-                                                        'this is an error.')), 403
+                                                           'have on record. Please log into the account you used '
+                                                           'previously. Please contact sipb-discord@mit.edu if '
+                                                           'this is an error.')), 403
         connection.close()
         ldap = get_ldap(kerb)
         roles = [config['discord']['verified'], config['discord']['roles'][ldap['eduPersonAffiliation']]]
@@ -115,9 +115,9 @@ def index():
                                                                        '<a href="mailto:sipb-discord@mit.edu">'
                                                                        'sipb-discord@mit.edu</a> for assistance.')
                                                ), 500
-                return render_template(BASE_TEMPLATE, message=('You should now have access to the CPW 2020 Discord '
-                                                               'server! If you are having problems, please let us '
-                                                               'know.'))
+            return render_template(BASE_TEMPLATE, message=('You should now have access to the CPW 2020 Discord '
+                                                           'server! If you are having problems, please let us '
+                                                           'know.'))
         return render_template(BASE_TEMPLATE, message=('There was an error granting you access to the Discord '
                                                        'server. Please contact '
                                                        '<a href="mailto:sipb-discord@mit.edu">sipb-discord@mit.edu'
