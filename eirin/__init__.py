@@ -107,7 +107,7 @@ def index():
         if r.status_code in [201, 204]:
             if r.status_code == 204:
                 for i in roles:
-                    r = get('https://discordapp.com/api/guilds/{}/members/{}/roles/{}'
+                    r = put('https://discordapp.com/api/guilds/{}/members/{}/roles/{}'
                             .format(config['discord']['guild'], user['id'], i), headers=authorization)
                     if r.status_code != 204:
                         return render_template(BASE_TEMPLATE, message=('There was an error granting you access to '
