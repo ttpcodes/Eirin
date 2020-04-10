@@ -4,4 +4,4 @@ node_modules/
 venv/
 
 config.json
-email.txt
+email.html

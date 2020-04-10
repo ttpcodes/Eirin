@@ -11,7 +11,7 @@ submissions = 'testsubmissions'
 with open('config.json') as fp:
     config = load(fp)
 
-with open('email.txt') as fp:
+with open('email.html') as fp:
     template = fp.read()
 
 smtp = SMTP_SSL('outgoing.mit.edu')
