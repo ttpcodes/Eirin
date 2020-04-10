@@ -67,18 +67,18 @@ def index():
         if kerb_in_bot:
             cursor.execute("SELECT user_id FROM bot WHERE kerberos = %s", (kerb,))
             user_id = cursor.fetchone()
+            kerb_in_submissions = 1
         else:
+            cursor.execute("SELECT EXISTS(SELECT * FROM "+submissions+" WHERE kerberos = %s)", (kerb,))
+            kerb_in_submissions = cursor.fetchone()[0]
             user_id == None
-
-        cursor.execute("SELECT EXISTS(SELECT * FROM "+submissions+" WHERE kerberos = %s)", (kerb,))
-        kerb_in_submissions = cursor.fetchone()[0]
 
         if kerb_in_submissions:
             if discord.authorized:
                 user = discord.get('/api/users/@me').json()
                 if not user_id:
                     # Update the database so that in the bot table, the kerb has user id (stored in user['id']).
-                    cursor.execute("UPDATE bot SET kerberos = %s, user_id = %s", (kerb, user['id']))
+                    cursor.execute("INSERT INTO bot (kerberos, user_id) VALUES (%s, %s)", (kerb, user['id']))
                     connection.commit()
                 if user and user['id'] != user:
                     return render_template(BASE_TEMPLATE, message=("Your current Discord account doesn't match what we "
