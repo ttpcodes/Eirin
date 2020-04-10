@@ -52,11 +52,15 @@ def index():
             database=config['database']['database'])
     except Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            raise CommandError("Check your username or password.")
+            return render_template(BASE_TEMPLATE, message=('The database could not be loaded. Verify that the username '
+                                                           'and password is correct.')), 500
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            raise CommandError("Database does not exist.")
+            return render_template(BASE_TEMPLATE, message=('The database could not be loaded. Verify that the database '
+                                                           'exists.')), 500
         else:
-            raise CommandError(err)
+            return render_template(BASE_TEMPLATE, message=('The database could not be loaded. Please contact '
+                                                           '<a href="mailto:sipb-discord@mit.edu">sipb-discord@mit.edu'
+                                                           '</a> for assistance.')), 500
     # Check if kerb is in bot table. If it is, set user_id from there. If not, check submissions for kerb. If kerb
     # doesn't exist, we go to the error way at the bottom. If it does exist, create a new record in bot with kerb set.
     # Set user_id to None.
