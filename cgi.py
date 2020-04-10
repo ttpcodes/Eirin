@@ -7,5 +7,5 @@ from wsgiref.handlers import CGIHandler
 
 with open('config.json') as fp:
     config = load(fp)
-    environ['SCRIPT_NAME'] = config['root']
+    environ['SCRIPT_NAME'] = config['flask']['root']
 CGIHandler().run(app)
