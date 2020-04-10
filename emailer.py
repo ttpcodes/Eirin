@@ -53,7 +53,21 @@ for i in results:
     cursor.execute("INSERT INTO bot (kerberos) VALUES (%s)", (i,))
     connection.commit()
     print('Processed kerberos {}. Waiting 5 seconds for cooldown.'.format(i))
+    connection.close()
     sleep(5)
-print('Kerberoi from the last hour have been processed.')
+    try:
+        connection = connect(
+            user=config['database']['username'],
+            password=config['database']['password'],
+            host=config['database']['host'],
+            database=config['database']['database'])
+    except Error as err:
+        if err.errno == ER_ACCESS_DENIED_ERROR:
+            raise Exception('Could not connect to the database. Check your username or password.')
+        elif err.errno == ER_BAD_DB_ERROR:
+            raise Exception("Database does not exist.")
+        else:
+            raise err
 
-connection.close()
+    cursor = connection.cursor()
+print('Kerberoi from the last hour have been processed.')
