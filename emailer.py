@@ -38,10 +38,7 @@ cursor.execute("SELECT "+submissions+".kerberos FROM "+submissions+
                " AND "+submissions+".processed = 0")
 rows = cursor.fetchall()
 intermediate = [row[0] for row in rows]
-results = []
-for result in intermediate:
-    if result not in results:
-        results.append(result)
+results = set(intermediate)
 
 for i in results:
     msg = MIMEText(template.format(), 'html')
