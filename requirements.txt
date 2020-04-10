@@ -1,2 +1,3 @@
 Flask==1.1.2
 Flask-Dance==3.0.0
+mysql-connector==2.2.9
