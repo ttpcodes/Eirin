@@ -52,7 +52,8 @@ for i in results:
     cursor.execute("UPDATE "+submissions+" SET processed = 1 WHERE kerberos = %s", (i,))
     cursor.execute("INSERT INTO bot (kerberos) VALUES (%s)", (i,))
     connection.commit()
-    connection.close()
     print('Processed kerberos {}. Waiting 5 seconds for cooldown.'.format(i))
     sleep(5)
 print('Kerberoi from the last hour have been processed.')
+
+connection.close()
