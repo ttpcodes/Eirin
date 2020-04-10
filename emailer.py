@@ -53,6 +53,7 @@ for i in results:
     # Add kerberos to the bot table IF NOT EXISTS.
     # Set processed = True for all instances of the Kerberos in the submissions table.
     cursor.execute("UPDATE "+submissions+" SET processed = 1 WHERE kerberos = %s", (i,))
+    cursor.execute("INSERT INTO bot (kerberos) VALUES (%s)", (i,))
     connection.commit()
     connection.close()
     print('Processed kerberos {}. Waiting 5 seconds for cooldown.'.format(i))
