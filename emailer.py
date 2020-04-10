@@ -70,4 +70,5 @@ for i in results:
             raise err
 
     cursor = connection.cursor()
+connection.close()
 print('Kerberoi from the last hour have been processed.')
