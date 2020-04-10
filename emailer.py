@@ -3,6 +3,11 @@ from json import load
 from smtplib import SMTP_SSL
 from time import sleep
 
+import mysql.connector
+from mysql.connector import errorcode
+
+submissions = 'testsubmissions'
+
 with open('config.json') as fp:
     config = load(fp)
 
@@ -13,6 +18,31 @@ smtp = SMTP_SSL('outgoing.mit.edu')
 smtp.login(config['smtp']['username'], config['smtp']['password'])
 
 # Select all people in the submissions table that aren't currently in the bot table (just the kerberos).
+try:
+    connection = connector.connect(
+        user=config['database']['username'],
+        password=config['database']['password'],
+        host=config['database']['host'],
+        database=config['database']['database'])
+except Error as err:
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        raise CommandError("Check your username or password.")
+    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+        raise CommandError("Database does not exist.")
+    else:
+        raise CommandError(err)
+cursor = connection.cursor()
+
+cursor.execute("SELECT "+submissions+".kerberos FROM "+submissions+
+" WHERE NOT EXISTS(SELECT NULL FROM bot WHERE bot.kerberos = "+submissions".kerberos)"
+" AND "+submissions+".processed = 0")
+rows = cursor.fetchall()
+intermediate = [row[0] for row in rows]
+results = []
+for result in intermediate:
+    if result not in results:
+        results.append(result)
+
 for i in results:
     msg = MIMEText(template.format(), 'html')
     msg['From'] = 'SIPB Discord <sipb-discord@mit.edu>'
@@ -22,6 +52,9 @@ for i in results:
     smtp.sendmail('sipb-discord@mit.edu', ['{}@mit.edu'.format(i[0]), msg['CC']], msg.as_string())
     # Add kerberos to the bot table IF NOT EXISTS.
     # Set processed = True for all instances of the Kerberos in the submissions table.
+    cursor.execute("UPDATE "+submissions+" SET processed = 1 WHERE kerberos = %s", (i,))
+    connection.commit()
+    connection.close()
     print('Processed kerberos {}. Waiting 5 seconds for cooldown.'.format(i[0]))
     sleep(5)
 print('Kerberoi from the last hour have been processed.')
