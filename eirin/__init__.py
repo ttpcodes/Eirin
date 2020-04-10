@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_dance.contrib.discord import discord, make_discord_blueprint
+from mysql.connector import connect, Error
 from requests import get, put
 
 from json import load
@@ -44,7 +45,7 @@ def base():
 def index():
     kerb = getenv('SSL_CLIENT_S_DN_Email').split('@')[0]
     try:
-        connection = connector.connect(
+        connection = connect(
             user=config['database']['username'],
             password=config['database']['password'],
             host=config['database']['host'],
