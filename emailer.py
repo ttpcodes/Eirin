@@ -47,7 +47,7 @@ for i in results:
     msg = MIMEText(template.format(), 'html')
     msg['From'] = 'SIPB Discord <sipb-discord@mit.edu>'
     msg['Subject'] = 'CPW 2020 Discord Access'
-    msg['To'] = '{}@mit.edu'.format(i[0])
+    msg['To'] = '{}@mit.edu'.format(i)
     msg['CC'] = 'sipb-discord-noreply@mit.edu'
     smtp.sendmail('sipb-discord@mit.edu', ['{}@mit.edu'.format(i[0]), msg['CC']], msg.as_string())
     # Add kerberos to the bot table IF NOT EXISTS.
@@ -55,6 +55,6 @@ for i in results:
     cursor.execute("UPDATE "+submissions+" SET processed = 1 WHERE kerberos = %s", (i,))
     connection.commit()
     connection.close()
-    print('Processed kerberos {}. Waiting 5 seconds for cooldown.'.format(i[0]))
+    print('Processed kerberos {}. Waiting 5 seconds for cooldown.'.format(i))
     sleep(5)
 print('Kerberoi from the last hour have been processed.')
