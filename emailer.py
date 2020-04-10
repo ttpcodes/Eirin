@@ -3,8 +3,8 @@ from json import load
 from smtplib import SMTP_SSL
 from time import sleep
 
-import mysql.connector
-from mysql.connector import errorcode
+from mysql.connector import connect, Error
+from mysql.connector.errorcode import ER_ACCESS_DENIED_ERROR, ER_BAD_DB_ERROR
 
 submissions = 'testsubmissions'
 
@@ -19,23 +19,23 @@ smtp.login(config['smtp']['username'], config['smtp']['password'])
 
 # Select all people in the submissions table that aren't currently in the bot table (just the kerberos).
 try:
-    connection = connector.connect(
+    connection = connect(
         user=config['database']['username'],
         password=config['database']['password'],
         host=config['database']['host'],
         database=config['database']['database'])
 except Error as err:
-    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-        raise CommandError("Check your username or password.")
-    elif err.errno == errorcode.ER_BAD_DB_ERROR:
-        raise CommandError("Database does not exist.")
+    if err.errno == ER_ACCESS_DENIED_ERROR:
+        raise Exception('Could not connect to the database. Check your username or password.')
+    elif err.errno == ER_BAD_DB_ERROR:
+        raise Exception("Database does not exist.")
     else:
-        raise CommandError(err)
-cursor = connection.cursor()
+        raise err
 
+cursor = connection.cursor()
 cursor.execute("SELECT "+submissions+".kerberos FROM "+submissions+
-" WHERE NOT EXISTS(SELECT NULL FROM bot WHERE bot.kerberos = "+submissions".kerberos)"
-" AND "+submissions+".processed = 0")
+               " WHERE NOT EXISTS(SELECT NULL FROM bot WHERE bot.kerberos = "+submissions+".kerberos)"
+               " AND "+submissions+".processed = 0")
 rows = cursor.fetchall()
 intermediate = [row[0] for row in rows]
 results = []
