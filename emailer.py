@@ -41,7 +41,7 @@ intermediate = [row[0] for row in rows]
 results = set(intermediate)
 
 for i in results:
-    msg = MIMEText(template.format(), 'html')
+    msg = MIMEText(template.format(i), 'html')
     msg['From'] = 'SIPB Discord <sipb-discord@mit.edu>'
     msg['Subject'] = 'CPW 2020 Discord Access'
     msg['To'] = '{}@mit.edu'.format(i)
